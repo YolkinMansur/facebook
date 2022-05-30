@@ -19,7 +19,7 @@
               v-model="login.email"
               class="w-full p-3 rounded-lg border my-2"
               placeholder="Электронный адрес"
-              type="text"
+              type="email"
             />
             <input
               v-model="login.password"
@@ -51,7 +51,7 @@
               v-model="registration.email"
               class="w-full p-3 rounded-lg border my-2"
               placeholder="Email"
-              type="email"
+              type="text"
             />
             <input
               v-model="registration.phone"
@@ -115,6 +115,7 @@
 
 <script>
 import axios from "axios";
+import {mapActions, mapGetters} from "vuex";
 export default {
   name: "RegistrationLogin",
   data() {
@@ -127,13 +128,16 @@ export default {
         phone: null,
         gender: null,
         password: null,
+        background: "https://cdn.wallpapersafari.com/19/16/i0afrx.jpg",
+        avatar:
+          "https://www.pngitem.com/pimgs/m/575-5759580_anonymous-avatar-image-png-transparent-png.png",
         friends: ["oljasalidarov@gmail.com"],
-        aboutMe: {
-          country: "",
-          currentCity: "",
-          avatar:
-            "https://sun9-3.userapi.com/s/v1/if2/5gKqXYqt0pOrOwCqbeqAWpHtDzzQnqnpm7-vOeLvBR08gpSqtz7uqpj0xcW_Eq07WNXynxHXludUfwabxO3i1EAl.jpg?size=1280x853&quality=96&type=album",
+        profileInfo: {
+          aboutMe: "",
+          working: "",
+          city: "",
         },
+        photos: [],
       },
       login: {
         email: null,
@@ -141,20 +145,20 @@ export default {
       },
     };
   },
-  async mounted() {
-    let res = await axios.get(
-      "https://6282500ded9edf7bd882691b.mockapi.io/users"
-    );
-    this.users = res.data;
-    // localStorage.clear();
+  computed: {
+    ...mapGetters(["sendUsers"]),
+  },
+  mounted() {
+    this.getUsers();
   },
   methods: {
+    ...mapActions(["getUsers"]),
     async regiterUser() {
       await axios.post(
         "https://6282500ded9edf7bd882691b.mockapi.io/users",
-        this.registration,
-        this.$router.go()
+        this.registration
       );
+      this.$router.go();
     },
     loginUser() {
       this.users.forEach(element => {
@@ -165,7 +169,7 @@ export default {
           localStorage.setItem("loggedUser", element.email);
           this.$router.go();
         } else {
-          console.log("error");
+          console.log("...");
         }
       });
     },
